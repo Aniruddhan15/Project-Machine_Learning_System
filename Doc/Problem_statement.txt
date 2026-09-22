@@ -1,0 +1,45 @@
+Problem Statement: Geomagnetic Storm Early-Warning System
+
+Background
+
+Geomagnetic storms, driven by solar wind disturbances, can damage power grid transformers, disrupt satellite operations, degrade GPS accuracy, and interfere with polar-route radio communications. These events are currently hard to anticipate with enough lead time for operators to take protective action. This project builds an automated ML system that consumes live solar wind data and forecasts, 3 hours in advance, whether a geomagnetic storm will hit Earth.
+
+Objective
+
+Deliver an end-to-end system that ingests live NOAA solar wind data hourly, runs it through a trained classification model, and surfaces a storm/no-storm forecast on a dashboard that operators can check and act on.
+
+Target Variable
+
+Binary classification: will the Kp index (0-9 scale of geomagnetic storm strength) be ≥5 three hours from the current time?
+
+1 = storm expected
+0 = no storm expected
+
+Data Sources
+
+Training: NASA OMNI2 hourly dataset, 2000-2025 (~228k hourly records spanning two full solar cycles), containing solar wind measurements and the corresponding Kp index. Source: https://spdf.gsfc.nasa.gov/pub/data/omni/low_res_omni/
+
+Inference: NOAA real-time solar wind feed (DSCOVR), polled hourly to generate live predictions. Source: https://services.swpc.noaa.gov/products/solar-wind/
+
+Use Case
+
+A power grid or satellite operator checks a dashboard that refreshes every hour. When it shows "storm likely in 3 hours," they take pre-emptive action — reducing grid load, putting satellites in safe mode, delaying launches, pausing GPS-dependent precision work, or rerouting polar flights before the storm arrives.
+
+Why This Matters
+
+A few hours of warning turns an expensive surprise into a manageable, planned response, for power companies protecting transformers, satellite operators protecting hardware, GPS-dependent users (farms, drone operators, surveyors) protecting precision work, and airlines protecting polar-route communications.
+
+Key Technical Considerations / Known Risks
+
+Class imbalance: Kp≥5 storm hours are a minority class (historically roughly 5-10% of hours), so model evaluation needs to go beyond raw accuracy and focus on storm-event recall/precision.
+
+Train/test split must be chronological, not random. The 26-year training window spans two solar cycles (peaks around 2003 and 2014, with the most recent max around 2024-2025); a random split would leak solar-cycle phase information and overstate performance. Plan to split by year ranges (e.g., train through ~2019, validate ~2020-2022, test ~2023-2025).
+
+Feature parity between training and inference sources: OMNI2 (hourly, science-grade, retrospective) and the live NOAA/DSCOVR feed differ in cadence, noise, and occasional gaps or outages. Feature engineering done on OMNI2 must be exactly reproducible from the live feed at inference time, or the model will degrade silently in production.
+
+Live feed reliability: the dashboard needs a defined behavior for stale or missing live data (e.g., last-known-good state, explicit "data unavailable" flag) rather than failing silently.
+
+Success Metrics (to be finalized)
+
+Model performance on the chronological test set (recall and precision on storm events specifically, not just accuracy), plus system-level reliability (successful hourly refresh rate of the live dashboard).
+

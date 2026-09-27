@@ -1,0 +1,5 @@
+outs:
+- md5: d0c588878c90565fbe2ba3c575081e38
+  size: 13635104
+  hash: md5
+  path: omni2_raw.parquet

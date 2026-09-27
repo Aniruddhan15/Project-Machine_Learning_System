@@ -1,0 +1,5 @@
+outs:
+- md5: 8dd9493aebbc7ebfaeb681e315012714
+  size: 734980
+  hash: md5
+  path: gfz_kp_raw.parquet

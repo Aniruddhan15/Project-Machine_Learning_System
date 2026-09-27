@@ -137,5 +137,4 @@ The objective is to demonstrate how an ML model becomes a **reproducible, deploy
 ## 👨‍💻 Author
 
 **Aniruddhan Narasimhan**
-
-M.S. Applied Machine Learning @ University of Maryland, College Park
+**Hamshika Radhakrishnan**
